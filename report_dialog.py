@@ -1,7 +1,10 @@
 from PyQt5.QtWidgets import QDialog, QPushButton, QLineEdit, QLabel, QGroupBox, QGridLayout, QVBoxLayout, QHBoxLayout, QSizePolicy, QDateEdit
+from input_dialog import UpperSimplifiedLineEdit
 import PyQt5.QtCore
 import sys
 import sqlite3
+import os
+import datetime
 
 class ReportDialog(QDialog):
 	def __init__(self, parent=None):
@@ -13,12 +16,15 @@ class ReportDialog(QDialog):
 		self.dateToLabel = QLabel("Дата по:")
 		self.dateToDateEdit = QDateEdit()
 		self.numberHotelLabel = QLabel("Код гостиницы:")
-		self.numberHotelLineEdit = QLineEdit()
+		self.numberHotelLineEdit = UpperSimplifiedLineEdit()
 		self.numberHotelLineEdit.setInputMask("999;_")
+		self.numberStructureLabel = QLabel("Код строения:")
+		self.numberStructureLineEdit = UpperSimplifiedLineEdit()
+		self.numberStructureLineEdit.setInputMask("99;_")
 		self.postLabel = QLabel("Должность приславшего:")
-		self.postLineEdit = QLineEdit()
+		self.postLineEdit = UpperSimplifiedLineEdit()
 		self.nameLabel = QLabel("ФИО:")
-		self.nameLineEdit = QLineEdit()
+		self.nameLineEdit = UpperSimplifiedLineEdit()
 				
 		self.layout = QGridLayout()
 		self.layout.addWidget(self.dateFromLabel, 0, 0)
@@ -27,10 +33,12 @@ class ReportDialog(QDialog):
 		self.layout.addWidget(self.dateToDateEdit, 1, 1)
 		self.layout.addWidget(self.numberHotelLabel, 2, 0)
 		self.layout.addWidget(self.numberHotelLineEdit, 2, 1)
-		self.layout.addWidget(self.postLabel, 3, 0)
-		self.layout.addWidget(self.postLineEdit, 3, 1)
-		self.layout.addWidget(self.nameLabel, 4, 0)
-		self.layout.addWidget(self.nameLineEdit, 4, 1)
+		self.layout.addWidget(self.numberStructureLabel, 3, 0)
+		self.layout.addWidget(self.numberStructureLineEdit, 3, 1)
+		self.layout.addWidget(self.postLabel, 4, 0)
+		self.layout.addWidget(self.postLineEdit, 4, 1)
+		self.layout.addWidget(self.nameLabel, 5, 0)
+		self.layout.addWidget(self.nameLineEdit, 5, 1)
 								
 		self.saveButton = QPushButton("Сохранить")
 		self.cancelButton = QPushButton("Отмена")
@@ -40,7 +48,7 @@ class ReportDialog(QDialog):
 		self.bottomLayout.addWidget(self.saveButton)
 		self.bottomLayout.addWidget(self.cancelButton)
 		
-		self.layout.addLayout(self.bottomLayout, 5, 0, 1, 2)
+		self.layout.addLayout(self.bottomLayout, 6, 0, 1, 2)
 		
 		self.setLayout(self.layout)
 		
@@ -63,10 +71,15 @@ class ReportDialog(QDialog):
 		return sqlite3.connect('fms.db')
 			
 	def save_data(self):
+		# create directory for current report
+		save_dir = datetime.datetime.now().strftime("%d%m%Y_%I%M%S")
+		if not os.path.exists(save_dir):
+			os.mkdir(save_dir)
+					
 		serial_number = self.get_serial_number()		# get serial number report
 				
-		name_file = "%s00%s.txt" % (self.numberHotelLineEdit.text(), serial_number)
-		report_file = open(name_file, "wb")
+		name_txt_file = "%s%s%s.txt" % (self.numberHotelLineEdit.text(), self.numberStructureLineEdit.text(), serial_number)
+		report_file = open((save_dir + "/" + name_txt_file), "wb")
 				
 		cursor = self.connect.cursor()
 		cursor.execute("SELECT type_page, surname, name, patronymic, birthday, country, region, city, district, "
@@ -82,16 +95,16 @@ class ReportDialog(QDialog):
 				row_str += ("\"%s\"" % cell)
 				row_str += ","
 			report_file.write(row_str.rstrip(",").encode('utf-8'))
-			report_file.write("\n".encode('utf-8'))
+			report_file.write("\r\n".encode('utf-8'))
 			count += 1
 		report_file.close()
 		
 		self.add_journal(count, serial_number)		# add record journal database
 		
-		name_file = "%s00%s.psm" % (self.numberHotelLineEdit.text(), serial_number)
-		cover_file = open(name_file, "wb")
+		name_psm_file = "%s%s%s.psm" % (self.numberHotelLineEdit.text(), self.numberStructureLineEdit.text(), serial_number)
+		cover_file = open((save_dir + "/" + name_psm_file), "wb")
 		row_str = ("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"" % 
-			(name_file, self.dateFromDateEdit.date().toString("ddMMyy"), self.dateToDateEdit.date().toString("ddMMyy"), str(count), "0", 
+			(name_txt_file, self.dateFromDateEdit.date().toString("ddMMyy"), self.dateToDateEdit.date().toString("ddMMyy"), str(count), "0", 
 			self.postLineEdit.text(), self.nameLineEdit.text()))
 		cover_file.write(row_str.encode('utf-8'))
 		cover_file.close()

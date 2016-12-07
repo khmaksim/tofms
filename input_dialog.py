@@ -1,21 +1,28 @@
 from PyQt5.QtWidgets import QDialog, QPushButton, QLineEdit, QLabel, QGroupBox, QGridLayout, QVBoxLayout, QHBoxLayout, QSizePolicy, QDateEdit
-import PyQt5.QtCore
+from PyQt5.QtCore import QObject, QEvent
 import sys
 import sqlite3
 
+class UpperSimplifiedLineEdit(QLineEdit):
+	def __init__(self, parent=None):
+		QLineEdit.__init__(self, parent)
+		
+	def text(self):
+		return self.displayText().upper().strip()
+		
 class InputDialog(QDialog):
 	def __init__(self, parent=None):
 		QDialog.__init__(self, parent)
 		self.setWindowTitle('Ввод данных')
 		
 		self.typePageLabel = QLabel("Тип листка:")
-		self.typePageLineEdit = QLineEdit()
+		self.typePageLineEdit = UpperSimplifiedLineEdit()
 		self.surnameLabel = QLabel("Фамилия:")
-		self.surnameLineEdit = QLineEdit()
+		self.surnameLineEdit = UpperSimplifiedLineEdit()
 		self.nameLabel = QLabel("Имя:")
-		self.nameLineEdit = QLineEdit()
+		self.nameLineEdit = UpperSimplifiedLineEdit()
 		self.patronymicLabel = QLabel("Отчество:")
-		self.patronymicLineEdit = QLineEdit()
+		self.patronymicLineEdit = UpperSimplifiedLineEdit()
 		
 		self.personLayout = QGridLayout()
 		self.personLayout.addWidget(self.typePageLabel, 0, 0)
@@ -30,17 +37,17 @@ class InputDialog(QDialog):
 		self.personGroupBox.setLayout(self.personLayout)
 						
 		self.birthdayLabel = QLabel("Дата:")
-		self.birthdayLineEdit = QLineEdit()
+		self.birthdayLineEdit = UpperSimplifiedLineEdit()
 		self.countryLabel = QLabel("Государство:")
-		self.countryLineEdit = QLineEdit()
+		self.countryLineEdit = UpperSimplifiedLineEdit()
 		self.regionLabel = QLabel("Область:")
-		self.regionLineEdit = QLineEdit()
+		self.regionLineEdit = UpperSimplifiedLineEdit()
 		self.cityLabel = QLabel("Город:")
-		self.cityLineEdit = QLineEdit()
+		self.cityLineEdit = UpperSimplifiedLineEdit()
 		self.districtLabel = QLabel("Район:")
-		self.districtLineEdit = QLineEdit()
+		self.districtLineEdit = UpperSimplifiedLineEdit()
 		self.localityLabel = QLabel("Населенный пункт:")
-		self.localityLineEdit = QLineEdit()
+		self.localityLineEdit = UpperSimplifiedLineEdit()
 		
 		self.birthLayout = QGridLayout()
 		self.birthLayout.addWidget(self.birthdayLabel, 0, 0)
@@ -59,23 +66,23 @@ class InputDialog(QDialog):
 		self.birthGroupBox.setLayout(self.birthLayout)
 	
 		self.countryResidenceLabel = QLabel("Государство:")
-		self.countryResidenceLineEdit = QLineEdit()
+		self.countryResidenceLineEdit = UpperSimplifiedLineEdit()
 		self.regionResidenceLabel = QLabel("Область:")
-		self.regionResidenceLineEdit = QLineEdit()
+		self.regionResidenceLineEdit = UpperSimplifiedLineEdit()
 		self.cityResidenceLabel = QLabel("Город:")
-		self.cityResidenceLineEdit = QLineEdit()
+		self.cityResidenceLineEdit = UpperSimplifiedLineEdit()
 		self.districtResidenceLabel = QLabel("Район:")
-		self.districtResidenceLineEdit = QLineEdit()
+		self.districtResidenceLineEdit = UpperSimplifiedLineEdit()
 		self.localityResidenceLabel = QLabel("Населенный пункт:")
-		self.localityResidenceLineEdit = QLineEdit()
+		self.localityResidenceLineEdit = UpperSimplifiedLineEdit()
 		self.streetResidenceLabel = QLabel("Улица:")
-		self.streetResidenceLineEdit = QLineEdit()
+		self.streetResidenceLineEdit = UpperSimplifiedLineEdit()
 		self.houseResidenceLabel = QLabel("Дом:")
-		self.houseResidenceLineEdit = QLineEdit()
+		self.houseResidenceLineEdit = UpperSimplifiedLineEdit()
 		self.caseResidenceLabel = QLabel("Корпус:")
-		self.caseResidenceLineEdit = QLineEdit()
+		self.caseResidenceLineEdit = UpperSimplifiedLineEdit()
 		self.apartmentResidenceLabel = QLabel("Квартира:")
-		self.apartmentResidenceLineEdit = QLineEdit()
+		self.apartmentResidenceLineEdit = UpperSimplifiedLineEdit()
 		
 		self.residenceLayout = QGridLayout()
 		self.residenceLayout.addWidget(self.countryResidenceLabel, 0, 0)
@@ -100,15 +107,15 @@ class InputDialog(QDialog):
 		self.residenceGroupBox.setLayout(self.residenceLayout)
 		
 		self.documentLabel = QLabel("Вид документа:")
-		self.documentLineEdit = QLineEdit()
+		self.documentLineEdit = UpperSimplifiedLineEdit()
 		self.seriesLabel = QLabel("Серия:")
-		self.seriesLineEdit = QLineEdit()
+		self.seriesLineEdit = UpperSimplifiedLineEdit()
 		self.numberLabel = QLabel("Номер:")
-		self.numberLineEdit = QLineEdit()
+		self.numberLineEdit = UpperSimplifiedLineEdit()
 		self.dateIssueLabel = QLabel("Дата выдачи:")
-		self.dateIssueLineEdit = QLineEdit()
+		self.dateIssueLineEdit = UpperSimplifiedLineEdit()
 		self.issuedLabel = QLabel("Кем выдан:")
-		self.issuedLineEdit = QLineEdit()
+		self.issuedLineEdit = UpperSimplifiedLineEdit()
 		
 		self.documentLayout = QGridLayout()
 		self.documentLayout.addWidget(self.documentLabel, 0, 0)
@@ -129,11 +136,11 @@ class InputDialog(QDialog):
 		self.dateRetirementLabel = QLabel("Дата выбытия:")
 		self.dateRetirementDateEdit = QDateEdit()
 		self.nameHotelLabel = QLabel("Название гостиницы:")
-		self.nameHotelLineEdit = QLineEdit()
+		self.nameHotelLineEdit = UpperSimplifiedLineEdit()
 		self.structureLabel = QLabel("Строение/Корпус/Сектор:")
-		self.structureLineEdit = QLineEdit()
+		self.structureLineEdit = UpperSimplifiedLineEdit()
 		self.roomLabel = QLabel("Комната:")
-		self.roomLineEdit = QLineEdit()
+		self.roomLineEdit = UpperSimplifiedLineEdit()
 		
 		self.checkLayout = QGridLayout()
 		self.checkLayout.addWidget(self.dateArrivalLabel, 0, 0)
@@ -171,7 +178,7 @@ class InputDialog(QDialog):
 		self.cancelButton.clicked.connect(self.cancel)
 		
 		self.connect = self.connect_database()
-		
+	
 	def connect_database(self):
 		return sqlite3.connect('fms.db')
 			
