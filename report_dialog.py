@@ -86,7 +86,7 @@ class ReportDialog(QDialog):
 						"locality, country_residence, region_residence, city_residence, district_residence, locality_residence, "
 						"street_residence, house_residence, case_residence, apartment_residence, document, series, number, date_issue, "
 						"issued, date_arrival_str, date_retirement_str, name_hotel, structure, room "
-						"FROM profile WHERE date_arrival >= ? AND date_retirement <= ?",
+						"FROM profile WHERE date_arrival >= ? AND date_arrival <= ?",
 			(self.dateFromDateEdit.date().toString("yyyy-MM-dd"), self.dateToDateEdit.date().toString("yyyy-MM-dd")))
 		count = 0
 		for row in cursor:
